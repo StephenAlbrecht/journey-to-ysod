@@ -30,45 +30,45 @@ import com.watabou.utils.Random;
 
 public class Metabolism extends Glyph {
 
-	private static final String TXT_METABOLISM	= "%s of metabolism";
-	
-	private static Glowing RED = new Glowing( 0xCC0000 );
-	
-	@Override
-	public int proc( Armor armor, Char attacker, Char defender, int damage) {
+    private static final String TXT_METABOLISM    = "%s of metabolism";
 
-		int level = Math.max( 0, armor.level );
-		if (Random.Int( level / 2 + 5 ) >= 4) {
-			
-			int healing = Math.min( defender.HT - defender.HP, Random.Int( 1, defender.HT / 5 ) );
+    private static Glowing RED = new Glowing(0xCC0000);
 
-			if (healing > 0) {
-				
-				Hunger hunger = defender.buff( Hunger.class );
+    @Override
+    public int proc(Armor armor, Char attacker, Char defender, int damage) {
 
-				if (hunger != null && !hunger.isStarving()) {
+        int level = Math.max(0, armor.level);
+        if (Random.Int(level / 2 + 5) >= 4) {
 
-					hunger.satisfy( -Hunger.STARVING / 10 );
-					BuffIndicator.refreshHero();
-					
-					defender.HP += healing;
-					defender.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
-					defender.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( healing ) );
-				}
-			}
+            int healing = Math.min(defender.HT - defender.HP, Random.Int(1, defender.HT / 5));
 
-		}
-		
-		return damage;
-	}
-	
-	@Override
-	public String name( String weaponName) {
-		return String.format( TXT_METABOLISM, weaponName );
-	}
+            if (healing > 0) {
 
-	@Override
-	public Glowing glowing() {
-		return RED;
-	}
+                Hunger hunger = defender.buff(Hunger.class);
+
+                if (hunger != null && !hunger.isStarving()) {
+
+                    hunger.satisfy(-Hunger.STARVING / 10);
+                    BuffIndicator.refreshHero();
+
+                    defender.HP += healing;
+                    defender.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+                    defender.sprite.showStatus(CharSprite.POSITIVE, Integer.toString(healing));
+                }
+            }
+
+        }
+
+        return damage;
+    }
+
+    @Override
+    public String name(String weaponName) {
+        return String.format(TXT_METABOLISM, weaponName);
+    }
+
+    @Override
+    public Glowing glowing() {
+        return RED;
+    }
 }

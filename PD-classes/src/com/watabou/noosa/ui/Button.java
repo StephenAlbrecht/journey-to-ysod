@@ -23,88 +23,88 @@ import com.watabou.noosa.TouchArea;
 
 public class Button<T> extends Component {
 
-	public static float longClick = 1f;
-	
-	protected TouchArea hotArea;
+    public static float longClick = 1f;
 
-	protected boolean pressed;
-	protected float pressTime;
-	
-	protected boolean processed;
+    protected TouchArea hotArea;
 
-	public T hotKey = null;
+    protected boolean pressed;
+    protected float pressTime;
 
-	@Override
-	protected void createChildren() {
-		hotArea = new TouchArea<T>( 0, 0, 0, 0 ) {
-			@Override
-			protected void onTouchDown(NoosaInputProcessor.Touch touch) {
-				pressed = true;
-				pressTime = 0;
-				processed = false;
-				Button.this.onTouchDown();
-			};
-			@Override
-			protected void onTouchUp(NoosaInputProcessor.Touch touch) {
-				pressed = false;
-				Button.this.onTouchUp();
-			};
-			@Override
-			protected void onClick( NoosaInputProcessor.Touch touch ) {
-				if (!processed) {
-					if (NoosaInputProcessor.modifier && onLongClick()) {
-					// Do nothing
-					} else {
-						Button.this.onClick();
-					}
-				}
-			};
-			@Override
-			public boolean onKeyDown(NoosaInputProcessor.Key<T> key) {
-				return Button.this.onKeyDown(key);
-			}
-			@Override
-			public boolean onKeyUp(NoosaInputProcessor.Key<T> key) {
-				return Button.this.onKeyUp(key);
-			}
-		};
-		add( hotArea );
-	}
-	
-	@Override
-	public void update() {
-		super.update();
-		
-		hotArea.active = visible;
-		
-		if (pressed) {
-			if ((pressTime += Game.elapsed) >= longClick) {
-				pressed = false;
-				if (onLongClick()) {
+    protected boolean processed;
 
-					hotArea.reset();
-					processed = true;
-					onTouchUp();
-					
-					Game.vibrate( 50 );
-				}
-			}
-		}
-	}
-	
-	protected void onTouchDown() {};
-	protected void onTouchUp() {};
-	protected void onClick() {};
+    public T hotKey = null;
+
+    @Override
+    protected void createChildren() {
+        hotArea = new TouchArea<T>(0, 0, 0, 0) {
+            @Override
+            protected void onTouchDown(NoosaInputProcessor.Touch touch) {
+                pressed = true;
+                pressTime = 0;
+                processed = false;
+                Button.this.onTouchDown();
+            };
+            @Override
+            protected void onTouchUp(NoosaInputProcessor.Touch touch) {
+                pressed = false;
+                Button.this.onTouchUp();
+            };
+            @Override
+            protected void onClick(NoosaInputProcessor.Touch touch) {
+                if (!processed) {
+                    if (NoosaInputProcessor.modifier && onLongClick()) {
+                    // Do nothing
+                    } else {
+                        Button.this.onClick();
+                    }
+                }
+            };
+            @Override
+            public boolean onKeyDown(NoosaInputProcessor.Key<T> key) {
+                return Button.this.onKeyDown(key);
+            }
+            @Override
+            public boolean onKeyUp(NoosaInputProcessor.Key<T> key) {
+                return Button.this.onKeyUp(key);
+            }
+        };
+        add(hotArea);
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        hotArea.active = visible;
+
+        if (pressed) {
+            if ((pressTime += Game.elapsed) >= longClick) {
+                pressed = false;
+                if (onLongClick()) {
+
+                    hotArea.reset();
+                    processed = true;
+                    onTouchUp();
+
+                    Game.vibrate(50);
+                }
+            }
+        }
+    }
+
+    protected void onTouchDown() {};
+    protected void onTouchUp() {};
+    protected void onClick() {};
 
     protected boolean onLongClick() {
         return false;
     };
 
-	protected boolean onKeyDown(NoosaInputProcessor.Key<T> key) {
-		return false;
-	}
-	protected boolean onKeyUp(NoosaInputProcessor.Key<T> key) {
-		if (active && hotKey != null && key.action.equals(hotKey)) {
+    protected boolean onKeyDown(NoosaInputProcessor.Key<T> key) {
+        return false;
+    }
+    protected boolean onKeyUp(NoosaInputProcessor.Key<T> key) {
+        if (active && hotKey != null && key.action.equals(hotKey)) {
             if (NoosaInputProcessor.modifier) {
                 return onLongClick();
             } else {
@@ -114,13 +114,13 @@ public class Button<T> extends Component {
         } else {
             return false;
         }
-	}
-	
-	@Override
-	protected void layout() {
-		hotArea.x = x;
-		hotArea.y = y;
-		hotArea.width = width;
-		hotArea.height = height;
-	}
+    }
+
+    @Override
+    protected void layout() {
+        hotArea.x = x;
+        hotArea.y = y;
+        hotArea.width = width;
+        hotArea.height = height;
+    }
 }

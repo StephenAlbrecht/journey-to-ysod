@@ -114,7 +114,7 @@ public class Crewmate extends NPC {
 
         private static final String NODE        = "crewmate";
         private static final String SPAWNED     = "spawned";
-        private static final String ALTERNATIVE	= "alternative";
+        private static final String ALTERNATIVE    = "alternative";
         private static final String PROCESSED   = "processed";
         private static final String GIVEN       = "given";
         private static final String KEY         = "key";
@@ -141,7 +141,7 @@ public class Crewmate extends NPC {
 
             if (!node.isNull() && (spawned = node.getBoolean(SPAWNED))) {
 
-                alternative	= node.getBoolean(ALTERNATIVE);
+                alternative    = node.getBoolean(ALTERNATIVE);
                 processed   = node.getBoolean(PROCESSED);
                 given       = node.getBoolean(GIVEN);
                 key         = (GoldenKey)node.get(KEY);

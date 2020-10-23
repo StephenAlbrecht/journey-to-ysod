@@ -22,59 +22,59 @@ import com.watabou.input.NoosaInputProcessor;
 import com.watabou.utils.Signal;
 
 public class Scene extends Group {
-	
-	private Signal.Listener<NoosaInputProcessor.Key> keyListener;
-	
-	public void create() {
-		Game.instance.getInputProcessor().addKeyListener(keyListener = new Signal.Listener<NoosaInputProcessor.Key>() {
-			@Override
-			public void onSignal(NoosaInputProcessor.Key key) {
-				if (Game.instance != null && key.pressed) {
-					switch (key.code) {
-						case Input.Keys.BACK:
-						case Input.Keys.ESCAPE:
-							onBackPressed();
-							break;
-						case Input.Keys.MENU:
-						case Input.Keys.F5:
-							onMenuPressed();
-							break;
-					}
-				}
-			}
-		});
-	}
-	
-	@Override
-	public void destroy() {
-		Game.instance.getInputProcessor().removeKeyListener(keyListener);
-		super.destroy();
-	}
-	
-	public void pause() {
-		
-	}
-	
-	public void resume() {
-		
-	}
-	
-	@Override
-	public void update() {
-		super.update();
-	}
-	
-	@Override
-	public Camera camera() {
-		return Camera.main;
-	}
-	
-	protected void onBackPressed() {
-		Game.instance.finish();
-	}
-	
-	protected void onMenuPressed() {
-		
-	}
+
+    private Signal.Listener<NoosaInputProcessor.Key> keyListener;
+
+    public void create() {
+        Game.instance.getInputProcessor().addKeyListener(keyListener = new Signal.Listener<NoosaInputProcessor.Key>() {
+            @Override
+            public void onSignal(NoosaInputProcessor.Key key) {
+                if (Game.instance != null && key.pressed) {
+                    switch (key.code) {
+                        case Input.Keys.BACK:
+                        case Input.Keys.ESCAPE:
+                            onBackPressed();
+                            break;
+                        case Input.Keys.MENU:
+                        case Input.Keys.F5:
+                            onMenuPressed();
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void destroy() {
+        Game.instance.getInputProcessor().removeKeyListener(keyListener);
+        super.destroy();
+    }
+
+    public void pause() {
+
+    }
+
+    public void resume() {
+
+    }
+
+    @Override
+    public void update() {
+        super.update();
+    }
+
+    @Override
+    public Camera camera() {
+        return Camera.main;
+    }
+
+    protected void onBackPressed() {
+        Game.instance.finish();
+    }
+
+    protected void onMenuPressed() {
+
+    }
 
 }

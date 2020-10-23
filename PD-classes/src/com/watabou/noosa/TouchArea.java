@@ -21,144 +21,144 @@ import com.watabou.input.NoosaInputProcessor;
 import com.watabou.utils.Signal;
 
 public class TouchArea<T> extends Visual implements Signal.Listener<NoosaInputProcessor.Touch> {
-	
-	// Its target can be toucharea itself
-	public final Visual target;
-	
-	protected NoosaInputProcessor.Touch touch = null;
 
-	private Signal.Listener<NoosaInputProcessor.Key<T>> keyListener = new Signal.Listener<NoosaInputProcessor.Key<T>>() {
-		@Override
-		public void onSignal(NoosaInputProcessor.Key<T> key) {
-			final boolean handled;
+    // Its target can be toucharea itself
+    public final Visual target;
 
-			if (key.pressed) {
-				handled = onKeyDown(key);
-			} else {
-				handled = onKeyUp(key);
-			}
+    protected NoosaInputProcessor.Touch touch = null;
 
-			if (handled) {
-				Game.instance.getInputProcessor().cancelKeyEvent();
-			}
-		}
-	};
+    private Signal.Listener<NoosaInputProcessor.Key<T>> keyListener = new Signal.Listener<NoosaInputProcessor.Key<T>>() {
+        @Override
+        public void onSignal(NoosaInputProcessor.Key<T> key) {
+            final boolean handled;
 
-	private Signal.Listener<NoosaInputProcessor.PDMouseEvent> mouseListener = new Signal.Listener<NoosaInputProcessor.PDMouseEvent>() {
-		@Override
-		public void onSignal(NoosaInputProcessor.PDMouseEvent event) {
-			final boolean handled;
+            if (key.pressed) {
+                handled = onKeyDown(key);
+            } else {
+                handled = onKeyUp(key);
+            }
 
-			handled = onMouseScroll(event.scroll);
+            if (handled) {
+                Game.instance.getInputProcessor().cancelKeyEvent();
+            }
+        }
+    };
 
-			if (handled) {
-				Game.instance.getInputProcessor().cancelMouseEvent();
-			}
-		}
-	};
+    private Signal.Listener<NoosaInputProcessor.PDMouseEvent> mouseListener = new Signal.Listener<NoosaInputProcessor.PDMouseEvent>() {
+        @Override
+        public void onSignal(NoosaInputProcessor.PDMouseEvent event) {
+            final boolean handled;
 
-	public boolean onMouseScroll(int scroll) {
-		return false;
-	}
+            handled = onMouseScroll(event.scroll);
 
-	public boolean onKeyDown(NoosaInputProcessor.Key<T> key) {
-		return false;
-	}
+            if (handled) {
+                Game.instance.getInputProcessor().cancelMouseEvent();
+            }
+        }
+    };
 
-	public boolean onKeyUp(NoosaInputProcessor.Key<T> key) {
-		return false;
-	}
+    public boolean onMouseScroll(int scroll) {
+        return false;
+    }
 
-	public TouchArea( Visual target ) {
-		super( 0, 0, 0, 0 );
-		this.target = target;
+    public boolean onKeyDown(NoosaInputProcessor.Key<T> key) {
+        return false;
+    }
 
-		setupListeners();
-	}
+    public boolean onKeyUp(NoosaInputProcessor.Key<T> key) {
+        return false;
+    }
 
-	public TouchArea( float x, float y, float width, float height ) {
-		super(x, y, width, height);
-		this.target = this;
+    public TouchArea(Visual target) {
+        super(0, 0, 0, 0);
+        this.target = target;
 
-		visible = false;
+        setupListeners();
+    }
 
-		setupListeners();
-	}
+    public TouchArea(float x, float y, float width, float height) {
+        super(x, y, width, height);
+        this.target = this;
 
-	private void setupListeners() {
-		NoosaInputProcessor<T> ip = Game.instance.<T>getInputProcessor();
-		ip.addTouchListener(this);
-		ip.addKeyListener(keyListener);
-		ip.addMouseListener(mouseListener);
-	}
+        visible = false;
 
-	@Override
-	public void onSignal( NoosaInputProcessor.Touch touch ) {
-		
-		if (!isActive()) {
-			return;
-		}
-		
-		boolean hit = touch != null && target.overlapsScreenPoint( (int)touch.start.x, (int)touch.start.y );
-		
-		if (hit) {
+        setupListeners();
+    }
 
-			Game.instance.getInputProcessor().cancelTouchEvent();
-			
-			if (touch.down) {
-				
-				if (this.touch == null) {
-					this.touch = touch;
-				}
-				onTouchDown( touch );
-				
-			} else {
-				
-				onTouchUp( touch );
-				
-				if (this.touch == touch) {
-					this.touch = null;
-					onClick( touch );
-				}
+    private void setupListeners() {
+        NoosaInputProcessor<T> ip = Game.instance.<T>getInputProcessor();
+        ip.addTouchListener(this);
+        ip.addKeyListener(keyListener);
+        ip.addMouseListener(mouseListener);
+    }
 
-			}
-			
-		} else {
-			
-			if (touch == null && this.touch != null) {
-				onDrag( this.touch );
-			}
-			
-			else if (this.touch != null && touch != null && !touch.down) {
-				onTouchUp( touch );
-				this.touch = null;
-			}
-			
-		}
-	}
-	
-	protected void onTouchDown( NoosaInputProcessor.Touch touch ) {
-	}
-	
-	protected void onTouchUp( NoosaInputProcessor.Touch touch ) {
-	}
-	
-	protected void onClick( NoosaInputProcessor.Touch touch ) {
-	}
-	
-	protected void onDrag( NoosaInputProcessor.Touch touch ) {
-	}
-	
-	public void reset() {
-		touch = null;
-	}
-	
-	@Override
-	public void destroy() {
-		NoosaInputProcessor<T> ip = Game.instance.<T>getInputProcessor();
-		ip.removeMouseListener(mouseListener);
-		ip.removeKeyListener(keyListener);
-		ip.removeTouchListener(this);
-		super.destroy();
-	}
+    @Override
+    public void onSignal(NoosaInputProcessor.Touch touch) {
+
+        if (!isActive()) {
+            return;
+        }
+
+        boolean hit = touch != null && target.overlapsScreenPoint((int)touch.start.x, (int)touch.start.y);
+
+        if (hit) {
+
+            Game.instance.getInputProcessor().cancelTouchEvent();
+
+            if (touch.down) {
+
+                if (this.touch == null) {
+                    this.touch = touch;
+                }
+                onTouchDown(touch);
+
+            } else {
+
+                onTouchUp(touch);
+
+                if (this.touch == touch) {
+                    this.touch = null;
+                    onClick(touch);
+                }
+
+            }
+
+        } else {
+
+            if (touch == null && this.touch != null) {
+                onDrag(this.touch);
+            }
+
+            else if (this.touch != null && touch != null && !touch.down) {
+                onTouchUp(touch);
+                this.touch = null;
+            }
+
+        }
+    }
+
+    protected void onTouchDown(NoosaInputProcessor.Touch touch) {
+    }
+
+    protected void onTouchUp(NoosaInputProcessor.Touch touch) {
+    }
+
+    protected void onClick(NoosaInputProcessor.Touch touch) {
+    }
+
+    protected void onDrag(NoosaInputProcessor.Touch touch) {
+    }
+
+    public void reset() {
+        touch = null;
+    }
+
+    @Override
+    public void destroy() {
+        NoosaInputProcessor<T> ip = Game.instance.<T>getInputProcessor();
+        ip.removeMouseListener(mouseListener);
+        ip.removeKeyListener(keyListener);
+        ip.removeTouchListener(this);
+        super.destroy();
+    }
 }

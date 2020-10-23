@@ -66,16 +66,16 @@ msys=false
 darwin=false
 nonstop=false
 case "`uname`" in
-  CYGWIN* )
+  CYGWIN*)
     cygwin=true
     ;;
-  Darwin* )
+  Darwin*)
     darwin=true
     ;;
-  MINGW* )
+  MINGW*)
     msys=true
     ;;
-  NONSTOP* )
+  NONSTOP*)
     nonstop=true
     ;;
 esac
@@ -144,7 +144,7 @@ if $cygwin ; then
         OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
     fi
     # Now convert the arguments - kludge to limit ourselves to /bin/sh
-    i=0
+    i = 0
     for arg in "$@" ; do
         CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
         CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
@@ -154,7 +154,7 @@ if $cygwin ; then
         else
             eval `echo args$i`="\"$arg\""
         fi
-        i=$((i+1))
+        i = $((i+1))
     done
     case $i in
         (0) set -- ;;

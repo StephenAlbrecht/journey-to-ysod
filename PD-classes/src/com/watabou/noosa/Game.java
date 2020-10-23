@@ -38,225 +38,225 @@ import java.io.OutputStream;
 
 public abstract class Game<GameActionType> implements ApplicationListener {
 
-	public static Game instance;
-	
-	// Actual size of the screen
-	public static int width;
-	public static int height;
-	
-	// Density: mdpi=1, hdpi=1.5, xhdpi=2...
-	public static float density = 1;
-	
-	public static String version;
-	private final String basePath;
-	private final NoosaInputProcessor<GameActionType> inputProcessor;
-	private final PDPlatformSupport platformSupport;
+    public static Game instance;
 
-	// Current scene
-	protected Scene scene;
-	// New scene we are going to switch to
-	protected Scene requestedScene;
-	// true if scene switch is requested
-	protected boolean requestedReset = true;
-	// New scene class
-	protected Class<? extends Scene> sceneClass;
-	
-	// Current time in milliseconds
-	protected long now;
-	// Milliseconds passed since previous update 
-	protected long step;
-	
-	public static float timeScale = 1f;
-	public static float elapsed = 0f;
+    // Actual size of the screen
+    public static int width;
+    public static int height;
 
-	public Game( Class<? extends Scene> c, PDPlatformSupport<GameActionType> platformSupport ) {
-		super();
-		sceneClass = c;
-		this.platformSupport = platformSupport;
-		this.inputProcessor = platformSupport.getInputProcessor();
-		this.basePath = platformSupport.getBasePath();
-	}
+    // Density: mdpi = 1, hdpi = 1.5, xhdpi = 2...
+    public static float density = 1;
 
-	@Override
-	public void create() {
-		instance = this;
-		
-		density = Gdx.graphics.getDensity();
-		this.inputProcessor.init();
-		Gdx.input.setInputProcessor(this.inputProcessor);
+    public static String version;
+    private final String basePath;
+    private final NoosaInputProcessor<GameActionType> inputProcessor;
+    private final PDPlatformSupport platformSupport;
 
-		// TODO: Is this right?
-		onSurfaceCreated();
-	}
-	
-	@Override
-	public void resume() {
-		now = 0;
+    // Current scene
+    protected Scene scene;
+    // New scene we are going to switch to
+    protected Scene requestedScene;
+    // true if scene switch is requested
+    protected boolean requestedReset = true;
+    // New scene class
+    protected Class<? extends Scene> sceneClass;
 
-		Music.INSTANCE.resume();
-		Sample.INSTANCE.resume();
-	}
-	
-	@Override
-	public void pause() {
-		if (scene != null) {
-			scene.pause();
-		}
-		
-		Script.reset();
-		
-		Music.INSTANCE.pause();
-		Sample.INSTANCE.pause();
-	}
-	
-	@Override
-	public void dispose() {
-		destroyGame();
-		
-		Music.INSTANCE.mute();
-		Sample.INSTANCE.reset();
-	}
+    // Current time in milliseconds
+    protected long now;
+    // Milliseconds passed since previous update
+    protected long step;
 
-	@Override
-	public void render() {
-		
-		if (width == 0 || height == 0) {
-			return;
-		}
-		
-		SystemTime.tick();
-		long rightNow = SystemTime.now;
-		step = (now == 0 ? 0 : rightNow - now);
-		now = rightNow;
-		
-		step();
+    public static float timeScale = 1f;
+    public static float elapsed = 0f;
 
-		NoosaScript.get().resetCamera();
-		Gdx.gl.glScissor( 0, 0, width, height );
-		Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
-		draw();
-	}
+    public Game(Class<? extends Scene> c, PDPlatformSupport<GameActionType> platformSupport) {
+        super();
+        sceneClass = c;
+        this.platformSupport = platformSupport;
+        this.inputProcessor = platformSupport.getInputProcessor();
+        this.basePath = platformSupport.getBasePath();
+    }
 
-	@Override
-	public void resize( int width, int height ) {
-		Gdx.gl.glViewport( 0, 0, width, height );
+    @Override
+    public void create() {
+        instance = this;
 
-		if (width != Game.width || height != Game.height) {
-			Game.width = width;
-			Game.height = height;
+        density = Gdx.graphics.getDensity();
+        this.inputProcessor.init();
+        Gdx.input.setInputProcessor(this.inputProcessor);
 
-			Scene sc = scene();
-			if (sc != null) {
-				TextureCache.reload();
-				Camera.reset();
-				switchScene(sc.getClass());
-			}
-		}
-	}
+        // TODO: Is this right?
+        onSurfaceCreated();
+    }
 
-	public void onSurfaceCreated() {
-		Gdx.gl.glEnable( GL20.GL_BLEND );
-		// For premultiplied alpha:
-		// Gdx.gl.glBlendFunc( GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA );
-		Gdx.gl.glBlendFunc( GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA );
+    @Override
+    public void resume() {
+        now = 0;
 
-		Gdx.gl.glEnable( GL20.GL_SCISSOR_TEST );
-		
-		TextureCache.reload();
-	}
-	
-	protected void destroyGame() {
-		if (scene != null) {
-			scene.destroy();
-			scene = null;
-		}
-		
-		instance = null;
-	}
-	
-	public static void resetScene() {
-		switchScene( instance.sceneClass );
-	}
-	
-	public static void switchScene( Class<? extends Scene> c ) {
-		instance.sceneClass = c;
-		instance.requestedReset = true;
-	}
-	
-	public static Scene scene() {
-		return instance.scene;
-	}
-	
-	protected void step() {
-		
-		if (requestedReset) {
-			requestedReset = false;
-			try {
-				requestedScene = ClassReflection.newInstance(sceneClass);
-				switchScene();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		update();
-	}
-	
-	protected void draw() {
-		scene.draw();
-	}
-	
-	protected void switchScene() {
+        Music.INSTANCE.resume();
+        Sample.INSTANCE.resume();
+    }
 
-		Camera.reset();
-		
-		if (scene != null) {
-			scene.destroy();
-		}
-		scene = requestedScene;
-		scene.create();
-		
-		Game.elapsed = 0f;
-		Game.timeScale = 1f;
-	}
-	
-	protected void update() {
-		Game.elapsed = Game.timeScale * step * 0.001f;
-		
-		scene.update();		
-		Camera.updateAll();
-	}
-	
-	public static void vibrate( int milliseconds ) {
-		Gdx.input.vibrate(milliseconds);
-	}
+    @Override
+    public void pause() {
+        if (scene != null) {
+            scene.pause();
+        }
 
-	public boolean deleteFile(String fileName) {
-		final FileHandle fh = Gdx.files.external(basePath != null ? basePath + fileName : fileName);
-		return fh.exists() && fh.delete();
-	}
+        Script.reset();
 
-	public InputStream openFileInput(String fileName) throws IOException {
-		final FileHandle fh = Gdx.files.external(basePath != null ? basePath + fileName : fileName);
-		if (!fh.exists())
-			throw new IOException("File " + fileName + " doesn't exist");
-		return fh.read();
-	}
+        Music.INSTANCE.pause();
+        Sample.INSTANCE.pause();
+    }
 
-	public OutputStream openFileOutput(String fileName) {
-		final FileHandle fh = Gdx.files.external(basePath != null ? basePath + fileName : fileName);
-		return fh.write(false);
-	}
+    @Override
+    public void dispose() {
+        destroyGame();
 
-	public void finish() {
-		Gdx.app.exit();
-	}
+        Music.INSTANCE.mute();
+        Sample.INSTANCE.reset();
+    }
 
-	public NoosaInputProcessor<GameActionType> getInputProcessor() {
-		return inputProcessor;
-	}
+    @Override
+    public void render() {
 
-	public PDPlatformSupport getPlatformSupport() {
-		return platformSupport;
-	}
+        if (width == 0 || height == 0) {
+            return;
+        }
+
+        SystemTime.tick();
+        long rightNow = SystemTime.now;
+        step = (now == 0 ? 0 : rightNow - now);
+        now = rightNow;
+
+        step();
+
+        NoosaScript.get().resetCamera();
+        Gdx.gl.glScissor(0, 0, width, height);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        Gdx.gl.glViewport(0, 0, width, height);
+
+        if (width != Game.width || height != Game.height) {
+            Game.width = width;
+            Game.height = height;
+
+            Scene sc = scene();
+            if (sc != null) {
+                TextureCache.reload();
+                Camera.reset();
+                switchScene(sc.getClass());
+            }
+        }
+    }
+
+    public void onSurfaceCreated() {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        // For premultiplied alpha:
+        // Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+
+        TextureCache.reload();
+    }
+
+    protected void destroyGame() {
+        if (scene != null) {
+            scene.destroy();
+            scene = null;
+        }
+
+        instance = null;
+    }
+
+    public static void resetScene() {
+        switchScene(instance.sceneClass);
+    }
+
+    public static void switchScene(Class<? extends Scene> c) {
+        instance.sceneClass = c;
+        instance.requestedReset = true;
+    }
+
+    public static Scene scene() {
+        return instance.scene;
+    }
+
+    protected void step() {
+
+        if (requestedReset) {
+            requestedReset = false;
+            try {
+                requestedScene = ClassReflection.newInstance(sceneClass);
+                switchScene();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        update();
+    }
+
+    protected void draw() {
+        scene.draw();
+    }
+
+    protected void switchScene() {
+
+        Camera.reset();
+
+        if (scene != null) {
+            scene.destroy();
+        }
+        scene = requestedScene;
+        scene.create();
+
+        Game.elapsed = 0f;
+        Game.timeScale = 1f;
+    }
+
+    protected void update() {
+        Game.elapsed = Game.timeScale * step * 0.001f;
+
+        scene.update();
+        Camera.updateAll();
+    }
+
+    public static void vibrate(int milliseconds) {
+        Gdx.input.vibrate(milliseconds);
+    }
+
+    public boolean deleteFile(String fileName) {
+        final FileHandle fh = Gdx.files.external(basePath != null ? basePath + fileName : fileName);
+        return fh.exists() && fh.delete();
+    }
+
+    public InputStream openFileInput(String fileName) throws IOException {
+        final FileHandle fh = Gdx.files.external(basePath != null ? basePath + fileName : fileName);
+        if (!fh.exists())
+            throw new IOException("File " + fileName + " doesn't exist");
+        return fh.read();
+    }
+
+    public OutputStream openFileOutput(String fileName) {
+        final FileHandle fh = Gdx.files.external(basePath != null ? basePath + fileName : fileName);
+        return fh.write(false);
+    }
+
+    public void finish() {
+        Gdx.app.exit();
+    }
+
+    public NoosaInputProcessor<GameActionType> getInputProcessor() {
+        return inputProcessor;
+    }
+
+    public PDPlatformSupport getPlatformSupport() {
+        return platformSupport;
+    }
 }
