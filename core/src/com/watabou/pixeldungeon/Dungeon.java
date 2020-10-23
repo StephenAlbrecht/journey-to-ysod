@@ -31,30 +31,13 @@ import com.watabou.pixeldungeon.actors.buffs.Amok;
 import com.watabou.pixeldungeon.actors.buffs.Light;
 import com.watabou.pixeldungeon.actors.hero.Hero;
 import com.watabou.pixeldungeon.actors.hero.HeroClass;
-import com.watabou.pixeldungeon.actors.mobs.npcs.Blacksmith;
-import com.watabou.pixeldungeon.actors.mobs.npcs.Imp;
-import com.watabou.pixeldungeon.actors.mobs.npcs.Ghost;
-import com.watabou.pixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.watabou.pixeldungeon.actors.mobs.npcs.*;
 import com.watabou.pixeldungeon.items.Ankh;
 import com.watabou.pixeldungeon.items.potions.Potion;
 import com.watabou.pixeldungeon.items.rings.Ring;
 import com.watabou.pixeldungeon.items.scrolls.Scroll;
 import com.watabou.pixeldungeon.items.wands.Wand;
-import com.watabou.pixeldungeon.levels.CavesBossLevel;
-import com.watabou.pixeldungeon.levels.CavesLevel;
-import com.watabou.pixeldungeon.levels.CityBossLevel;
-import com.watabou.pixeldungeon.levels.CityLevel;
-import com.watabou.pixeldungeon.levels.DeadEndLevel;
-import com.watabou.pixeldungeon.levels.HallsBossLevel;
-import com.watabou.pixeldungeon.levels.HallsLevel;
-import com.watabou.pixeldungeon.levels.LastLevel;
-import com.watabou.pixeldungeon.levels.LastShopLevel;
-import com.watabou.pixeldungeon.levels.Level;
-import com.watabou.pixeldungeon.levels.PrisonBossLevel;
-import com.watabou.pixeldungeon.levels.PrisonLevel;
-import com.watabou.pixeldungeon.levels.Room;
-import com.watabou.pixeldungeon.levels.SewerBossLevel;
-import com.watabou.pixeldungeon.levels.SewerLevel;
+import com.watabou.pixeldungeon.levels.*;
 import com.watabou.pixeldungeon.scenes.GameScene;
 import com.watabou.pixeldungeon.scenes.StartScene;
 import com.watabou.pixeldungeon.utils.BArray;
@@ -165,6 +148,7 @@ public class Dungeon {
 		Wandmaker.Quest.reset();
 		Blacksmith.Quest.reset();
 		Imp.Quest.reset();
+		Crewmate.Quest.reset();
 		
 		Room.shuffleTypes();
 		
@@ -201,6 +185,8 @@ public class Dungeon {
 		Level level;
 		switch (depth) {
 		case 1:
+			level = new CrewLevel();
+			break;
 		case 2:
 		case 3:
 		case 4:
@@ -432,6 +418,7 @@ public class Dungeon {
 			Wandmaker	.Quest.storeInBundle( quests );
 			Blacksmith	.Quest.storeInBundle( quests );
 			Imp			.Quest.storeInBundle( quests );
+			Crewmate	.Quest.storeInBundle(quests);
 			bundle.put( QUESTS, quests );
 			
 			Room.storeRoomsInBundle( bundle );
@@ -535,11 +522,13 @@ public class Dungeon {
 				Wandmaker.Quest.restoreFromBundle( quests );
 				Blacksmith.Quest.restoreFromBundle( quests );
 				Imp.Quest.restoreFromBundle( quests );
+				Crewmate.Quest.restoreFromBundle(quests);
 			} else {
 				Ghost.Quest.reset();
 				Wandmaker.Quest.reset();
 				Blacksmith.Quest.reset();
 				Imp.Quest.reset();
+				Crewmate.Quest.reset();
 			}
 			
 			Room.restoreRoomsFromBundle( bundle );

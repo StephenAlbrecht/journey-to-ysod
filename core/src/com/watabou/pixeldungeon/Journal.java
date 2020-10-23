@@ -19,23 +19,25 @@ package com.watabou.pixeldungeon;
 
 import java.util.ArrayList;
 
+import com.watabou.pixeldungeon.actors.mobs.npcs.Crewmate;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 public class Journal {
 
 	public static enum Feature {
-		WELL_OF_HEALTH			( "Well of Health" ),
-		WELL_OF_AWARENESS		( "Well of Awareness" ),
-		WELL_OF_TRANSMUTATION	( "Well of Transmutation" ),
-		ALCHEMY					( "Alchemy pot" ),
-		GARDEN					( "Garden" ),
-		STATUE					( "Animated statue" ),
+		WELL_OF_HEALTH			("Well of Health"),
+		WELL_OF_AWARENESS		("Well of Awareness"),
+		WELL_OF_TRANSMUTATION	("Well of Transmutation"),
+		ALCHEMY					("Alchemy pot"),
+		GARDEN					("Garden"),
+		STATUE					("Animated statue"),
 		
-		GHOST					( "Sad ghost" ),
-		WANDMAKER				( "Old wandmaker" ),
-		TROLL					( "Troll blacksmith" ),
-		IMP						( "Ambitious imp" );
+		GHOST					("Sad ghost"),
+		WANDMAKER				("Old wandmaker"),
+		TROLL					("Troll blacksmith"),
+		IMP						("Ambitious imp"),
+		CREWMATE				("Injured crewmate");
 		
 		public String desc;
 		
